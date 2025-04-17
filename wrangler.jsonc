@@ -5,7 +5,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "workflows": [
     {
-      "name": "ExampleWorkflow",
+      "name": "workflow-agent-demo",
       "binding": "EXAMPLE_WORKFLOW",
       "class_name": "ExampleWorkflow"
     }

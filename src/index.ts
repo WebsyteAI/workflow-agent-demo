@@ -4,13 +4,11 @@ interface Env {
   EXAMPLE_WORKFLOW: Workflow;
 }
 
-// Define the parameters your workflow will accept
 interface Params {
   email: string;
   message: string;
 }
 
-// Example workflow that logs a message, waits, and then logs again
 export class ExampleWorkflow extends WorkflowEntrypoint<Env, Params> {
   async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
     // Step 1: Log the incoming message
