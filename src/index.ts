@@ -1,7 +1,7 @@
 import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers';
 
 interface Env {
-  EXAMPLE_WORKFLOW: Workflow;
+  ExampleWorkflow: Workflow;
 }
 
 // Define the parameters your workflow will accept
@@ -39,14 +39,14 @@ export default {
     // Check workflow status
     const instanceId = url.searchParams.get('instanceId');
     if (instanceId) {
-      const instance = await env.EXAMPLE_WORKFLOW.get(instanceId);
+      const instance = await env.ExampleWorkflow.get(instanceId);
       return Response.json({ status: await instance.status() });
     }
 
     // Start a new workflow
     if (request.method === 'POST') {
       const data = await request.json();
-      const instance = await env.EXAMPLE_WORKFLOW.create({
+      const instance = await env.ExampleWorkflow.create({
         id: crypto.randomUUID(),
         params: data,
       });
