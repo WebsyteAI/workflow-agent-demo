@@ -1,0 +1,15 @@
+{
+  "name": "workflow-agent-demo",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "workflows": [
+    {
+      "name": "EXAMPLE_WORKFLOW",
+      "class_name": "ExampleWorkflow"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
