@@ -25,6 +25,10 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
 
+    if (url.pathname === '/test') {
+      return Response.json({ ok: true, message: 'Test endpoint is working!' });
+    }
+
     if (url.pathname.startsWith('/favicon')) {
       return Response.json({}, { status: 404 });
     }
