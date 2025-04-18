@@ -5,52 +5,44 @@ interface Env {
 }
 
 interface Params {
-  email: string;
-  message: string;
+  email?: string;
+  message?: string;
 }
 
 export class ExampleWorkflow extends WorkflowEntrypoint<Env, Params> {
   async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
-    // Step 1: Log the incoming message
-    const first = await step.do('Log initial message', async () => {
-      console.log(`Workflow started for: ${event.payload.email}`);
-      return { status: 'started', message: event.payload.message };
+    await step.do('Log start', async () => {
+      console.log('Workflow started', event.payload);
     });
-
-    // Step 2: Wait for 10 seconds
     await step.sleep('Wait 10 seconds', '10 seconds');
-
-    // Step 3: Log completion
-    const second = await step.do('Log completion', async () => {
-      console.log(`Workflow completed for: ${event.payload.email}`);
-      return { status: 'completed' };
+    await step.do('Log end', async () => {
+      console.log('Workflow completed', event.payload);
     });
-
-    return { first, second };
   }
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
+  async fetch(req: Request, env: Env): Promise<Response> {
+    const url = new URL(req.url);
 
-    // Check workflow status
-    const instanceId = url.searchParams.get('instanceId');
-    if (instanceId) {
-      const instance = await env.EXAMPLE_WORKFLOW.get(instanceId);
-      return Response.json({ status: await instance.status() });
+    if (url.pathname.startsWith('/favicon')) {
+      return Response.json({}, { status: 404 });
     }
 
-    // Start a new workflow
-    if (request.method === 'POST') {
-      const data = await request.json();
-      const instance = await env.EXAMPLE_WORKFLOW.create({
-        id: crypto.randomUUID(),
-        params: data,
+    // Get the status of an existing instance, if provided
+    const id = url.searchParams.get('instanceId');
+    if (id) {
+      const instance = await env.EXAMPLE_WORKFLOW.get(id);
+      return Response.json({
+        status: await instance.status(),
       });
-      return Response.json({ id: instance.id, details: await instance.status() });
     }
 
-    return Response.json({ usage: 'POST { email, message } to start workflow, or ?instanceId=... to check status.' });
+    // Spawn a new instance and return the ID and status
+    const instance = await env.EXAMPLE_WORKFLOW.create();
+    return Response.json({
+      id: instance.id,
+      details: await instance.status(),
+    });
   },
 };
